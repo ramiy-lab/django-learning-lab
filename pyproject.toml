@@ -53,3 +53,9 @@ disallow_untyped_calls = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
 disallow_untyped_decorators = true
+
+exclude = [
+  "^django_forge_01_basics/asgi\\.py$",
+  "^django_forge_01_basics/wsgi\\.py$",
+  "^pages/migrations/.*$",
+]
