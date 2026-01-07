@@ -6,7 +6,10 @@
     <title>Page Detail</title>
 </head>
 <body>
-    <h1>Page ID</h1>
-    <p>{{ page_id }}</p>
+    <h1>Page {{ page_id }}</h1>
+
+    <a href="{% url 'pages:detail' id=page_id %}">
+        自分自身へのリンク
+    </a>
 </body>
 </html>
