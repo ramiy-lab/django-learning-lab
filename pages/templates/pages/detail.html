@@ -8,6 +8,12 @@
 <body>
     <h1>Page {{ page_id }}</h1>
 
-    <p>Request handled successfully</p>
+    <p>{{ message }}</p>
+
+    {% if debug %}
+      <p style="color: red;">{{ debug_message }}</p>
+    {% else %}
+      <p>Debug mode is OFF</p>
+    {% endif %}
 </body>
 </html>

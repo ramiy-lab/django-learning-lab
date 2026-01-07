@@ -4,16 +4,15 @@ from django.shortcuts import render
 from .services import build_page_context
 
 
-def home(request: HttpRequest) -> HttpResponse:
-    return HttpResponse("Hello Django")
-
-
 def page_detail(request: HttpRequest, id: int) -> HttpResponse:
-    # 1. request は「入力」
-    method = request.method  # GET / POST など
+    # GETパラメータは文字列として入る
+    debug_param: str | None = request.GET.get("debug")
 
-    # 2. Service層を呼ぶ（責務はここにない）
-    context = build_page_context(page_id=id)
+    debug: bool = debug_param == "true"
 
-    # 3. responseを返す（出力）
+    context = build_page_context(
+        page_id=id,
+        debug=debug,
+    )
+
     return render(request, "pages/detail.html", context)

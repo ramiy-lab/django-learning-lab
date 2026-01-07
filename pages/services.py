@@ -1,7 +1,17 @@
-def build_page_context(page_id: int) -> dict[str, int]:
+from typing import Any
+
+
+def build_page_context(*, page_id: int, debug: bool) -> dict[str, Any]:
     """
-    ページ表示に必要な際小コンテキストを作る
+    表示専用のcontextを組み立てるService
     """
-    return {
+    context: dict[str, Any] = {
         "page_id": page_id,
+        "message": f"Page ID is {page_id}",
+        "debug": debug,
     }
+
+    if debug:
+        context["debug_message"] = "Debug mode is ON"
+
+    return context
