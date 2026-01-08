@@ -1,18 +1,21 @@
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
-from .services import build_page_context
+from .models import Page
+from .services import process_comment
 
 
-def page_detail(request: HttpRequest, id: int) -> HttpResponse:
-    # GETパラメータは文字列として入る
-    debug_param: str | None = request.GET.get("debug")
+def page_detail(request, id: int):
+    page = get_object_or_404(Page, id=id)
 
-    debug: bool = debug_param == "true"
+    message = ""
 
-    context = build_page_context(
-        page_id=id,
-        debug=debug,
-    )
+    if request.method == "POST":
+        comment = request.POST.get("comment", "")
+        message = process_comment(comment)
 
+    context = {
+        "page": page,
+        "message": message,
+    }
     return render(request, "pages/detail.html", context)

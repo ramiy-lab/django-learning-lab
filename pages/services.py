@@ -1,17 +1,18 @@
-from typing import Any
+from .models import Page
 
 
-def build_page_context(*, page_id: int, debug: bool) -> dict[str, Any]:
-    """
-    表示専用のcontextを組み立てるService
-    """
-    context: dict[str, Any] = {
-        "page_id": page_id,
-        "message": f"Page ID is {page_id}",
-        "debug": debug,
+def build_page_context(page: Page, message: str = "") -> dict:
+    return {
+        "page": page,
+        "message": message,
     }
 
-    if debug:
-        context["debug_message"] = "Debug mode is ON"
 
-    return context
+def process_comment(comment: str) -> str:
+    if not comment:
+        return "コメントが入力されていません"
+
+    if len(comment) > 100:
+        return "コメントは100文字以内で入力してください"
+
+    return "コメントを受け付けました"
