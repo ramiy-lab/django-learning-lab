@@ -1,26 +1,26 @@
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 from .models import Page
 from .services import process_comment
 
 
-def page_detail(request: HttpRequest, id: int) -> HttpResponse:
+def page_detail(request: HttpRequest, id: int) -> HttpRequest:
     page = get_object_or_404(Page, id=id)
 
-    message = ""
-    debug = False
+    message: str = ""
 
     if request.method == "POST":
-        comment = request.POST.get("comment", "")
+        comment: str = request.POST.get("comment", "")
         message = process_comment(comment)
 
-    if request.GET.get("debug") == "true":
-        debug = True
+        request.session["message"] = message
+        return redirect("pages:detail", id=page.id)
+
+    message = request.session.pop("message", "")
 
     context = {
         "page": page,
         "message": message,
-        "debug": debug,
     }
     return render(request, "pages/detail.html", context)

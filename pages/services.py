@@ -15,4 +15,4 @@ def process_comment(comment: str) -> str:
     if len(comment) > 100:
         return "コメントは100文字以内で入力してください"
 
-    return "コメントを受け付けました"
+    return f"コメントを受け付けました: {comment}"
