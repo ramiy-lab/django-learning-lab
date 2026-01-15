@@ -5,9 +5,13 @@
 {% endblock %}
 
 {% block content %}
-<h2>{{ page.title }}</h2>
 
-<p>{{ page.body }}</p>
+<div class="page-title">
+    <h2>{{ page.title }}</h2>
+</div>
+
+<div class="page-body">
+    <p>{{ page.body }}</p>
 
 <form method="post">
     {% csrf_token %}
@@ -17,5 +21,7 @@
 
 {% if message %}
 <p>{{ message }}</p>
+</div>
+
 {% endif %}
 {% endblock %}

@@ -5,7 +5,7 @@ from .models import Page
 from .services import process_comment
 
 
-def page_detail(request: HttpRequest, id: int) -> HttpRequest:
+def page_detail(request: HttpRequest, id: int) -> HttpResponse:
     page = get_object_or_404(Page, id=id)
 
     message: str = ""

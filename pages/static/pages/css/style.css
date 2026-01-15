@@ -1,0 +1,26 @@
+body {
+    background-color: brown;
+    font-family: 'Meiryo', sans-serif;
+}
+
+h1, h2, header, footer {
+    font-family: 'Orbitron', 'Meiryo', sans-serif;
+    color: coral;
+}
+
+.page-title h2 {
+    font-family: 'Orbitron', 'Meiryo', sans-serif;
+    letter-spacing: 1.5px;
+    color: coral;
+}
+
+.page-body p {
+    font-family: 'Meiryo', sans-serif;
+    color: white;
+    line-height: 1.7;
+}
+
+.message p {
+    font-family: 'Meiryo', sans-serif;
+    color: lightseagreen;
+}
