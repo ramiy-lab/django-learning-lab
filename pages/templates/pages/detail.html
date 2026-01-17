@@ -8,20 +8,24 @@
 
 <div class="page-title">
     <h2>{{ page.title }}</h2>
+
+    {% if page.subtitle %}
+        <p class="page-subtitle">{{ page.subtitle }}</p>
+    {% endif %}
 </div>
 
 <div class="page-body">
     <p>{{ page.body }}</p>
 
-<form method="post">
-    {% csrf_token %}
-    <input type="text" name="comment">
-    <button type="submit">送信</button>
-</form>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="comment">
+        <button type="submit">送信</button>
+    </form>
 
-{% if message %}
-<p>{{ message }}</p>
+    {% if message %}
+    <p class="messaage">{{ message }}</p>
+    {% endif %}
 </div>
 
-{% endif %}
 {% endblock %}
