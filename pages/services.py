@@ -1,7 +1,7 @@
-from .models import Page
+from .models import Article
 
 
-def build_page_context(page: Page, message: str = "") -> dict[str, object]:
+def build_page_context(page: Article, message: str = "") -> dict[str, object]:
     return {
         "page": page,
         "message": message,

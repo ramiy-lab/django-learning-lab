@@ -1,12 +1,12 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
-from .models import Page
+from .models import Article
 from .services import process_comment
 
 
 def page_detail(request: HttpRequest, id: int) -> HttpResponse:
-    page = get_object_or_404(Page, id=id)
+    page = get_object_or_404(Article, id=id)
 
     message: str = ""
 
