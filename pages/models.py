@@ -2,7 +2,7 @@ from email.policy import default
 from django.db import models
 
 
-class Article(models.Model):
+class Article(models.Model):  # type: ignore[misc]
     title = models.CharField(
         max_length=100,
         verbose_name="タイトル",
@@ -24,5 +24,8 @@ class Article(models.Model):
         verbose_name="閲覧数",
     )
 
-    def __str__(self):
-        return self.title
+    class Meta:
+        ordering = ["-id"]
+
+    def __str__(self) -> str:
+        return str(self.title)
