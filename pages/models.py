@@ -1,5 +1,5 @@
-from email.policy import default
 from django.db import models
+from django.utils import timezone
 
 
 class Author(models.Model):  # type: ignore[misc]
@@ -23,6 +23,11 @@ class Article(models.Model):  # type: ignore[misc]
         Author,
         on_delete=models.CASCADE,
         related_name="articles",
+    )
+
+    created_at = models.DateTimeField(
+        default=timezone.now,
+        verbose_name="作成日時",
     )
 
     class Meta:
