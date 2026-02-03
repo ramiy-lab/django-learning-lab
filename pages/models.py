@@ -16,6 +16,7 @@ class Article(models.Model):  # type: ignore[misc]
     )
 
     body = models.TextField(
+        blank=True,
         verbose_name="本文",
     )
 

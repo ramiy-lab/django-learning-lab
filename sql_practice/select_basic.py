@@ -10,14 +10,9 @@ def main() -> None:
         cursor = conn.cursor()
         cursor.execute(
             """
-            SELECT
-                id,
-                title,
-                body,
-                author_id,
-                created_at
-            FROM pages_articles
-            ORDER BY id DESC
+            SELECT id, title, body, author_id, created_at
+            FROM pages_article
+            ORDER BY created_at DESC
             LIMIT 5;
             """
         )
