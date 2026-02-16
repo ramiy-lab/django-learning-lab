@@ -1,0 +1,12 @@
+<h2>Simple Name Form</h2>
+
+<form action="{% url 'form_page' %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">送信</button>
+</form>
+
+<hr>
+
+<h3>Errors:</h3>
+{{ form.errors }}
