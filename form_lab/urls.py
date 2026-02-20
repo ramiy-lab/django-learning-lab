@@ -1,6 +1,8 @@
 from django.urls import path
-from . import views
+from .views import simple_article_create
+
+app_name = "form_lab"
 
 urlpatterns = [
-    path("", views.form_page, name="form_page"),
+    path("simple/", simple_article_create, name="simple_article_create"),
 ]

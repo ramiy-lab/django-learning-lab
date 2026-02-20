@@ -1,27 +1,18 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
-import time
 
-from .forms import SimpleNameForm
+from .forms import SimpleArticleForm
 
 
-def form_page(request: HttpRequest) -> HttpResponse:
+def simple_article_create(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
-        form = SimpleNameForm(request.POST)
-
-        time.sleep(4)
-        print("🟡 is_valid 呼ぶ前")
-        time.sleep(2)
-        print("cleaned_data:", getattr(form, "cleaned_data", None))
+        form = SimpleArticleForm(request.POST)
 
         if form.is_valid():
-            print("🟢 is_valid True")
-            print("cleaned_data:", form.cleaned_data)
-        else:
-            print("🔴 is_valid False")
-            print("errors:", form.errors)
+            article = form.save()
+            print("保存されたID", article.id)
 
     else:
-        form = SimpleNameForm()
+        form = SimpleArticleForm()
 
-    return render(request, "form_lab/form_page.html", {"form": form})
+    return render(request, "form_lab/simple_article_form.html", {"form": form})
