@@ -60,5 +60,14 @@ exclude = [
   "^pages/migrations/.*$",
 ]
 
-[tool.mypy]
 plugins = ["mypy_django_plugin.main"]
+
+
+# ==============================================================
+# 🔹 django-stubs 設定
+# ==============================================================
+
+[tool.django-stubs]
+django_settings_module = "django_forge_01_basics.settings"
+strict_settings = true
+strict_model_abstract_attrs = true

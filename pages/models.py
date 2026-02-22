@@ -2,14 +2,14 @@ from django.db import models
 from django.utils import timezone
 
 
-class Author(models.Model):  # type: ignore[misc]
+class Author(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self) -> str:
         return str(self.name)
 
 
-class Article(models.Model):  # type: ignore[misc]
+class Article(models.Model):
     title = models.CharField(
         max_length=100,
         verbose_name="タイトル",

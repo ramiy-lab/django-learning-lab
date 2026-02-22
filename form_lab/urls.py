@@ -1,8 +1,12 @@
 from django.urls import path
-from .views import simple_article_create
+from . import views
 
 app_name = "form_lab"
 
 urlpatterns = [
-    path("simple/", simple_article_create, name="simple_article_create"),
+    path(
+        "simple/",
+        views.simple_article_create,
+        name="simple_article_create",
+    ),
 ]
