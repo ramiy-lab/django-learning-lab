@@ -6,7 +6,7 @@ app_name = "form_lab"
 urlpatterns = [
     path(
         "simple/",
-        views.simple_article_create,
-        name="simple_article_create",
+        views.article_create,
+        name="article_create",
     ),
 ]

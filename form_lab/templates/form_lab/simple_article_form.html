@@ -1,7 +1,12 @@
-<h1>Simple Article Create</h1>
+{% extends "pages/base.html" %}
+
+{% block content %}
+<h2>Create Article</h2>
 
 <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">送信</button>
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save</button>
 </form>
+
+{% endblock %}

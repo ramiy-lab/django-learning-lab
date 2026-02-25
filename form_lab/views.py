@@ -1,17 +1,23 @@
+from __future__ import annotations
+
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 
 from .forms import SimpleArticleForm
 
 
-def simple_article_create(request: HttpRequest) -> HttpResponse:
+def article_create(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
-        form = SimpleArticleForm(request.POST)
+        form: SimpleArticleForm = SimpleArticleForm(request.POST)
         if form.is_valid():
-            print("author type:", type(form.cleaned_data["author"]))
             form.save()
-            return redirect("form_lab:simple_article_create")
+
+            return redirect("form_lab:article_create")
     else:
         form = SimpleArticleForm()
 
-    return render(request, "form_lab/simple_article_form.html", {"form": form})
+    return render(
+        request,
+        "form_lab/simple_article_form.html",
+        {"form": form},
+    )
