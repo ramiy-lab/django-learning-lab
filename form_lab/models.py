@@ -14,7 +14,7 @@ class Author(models.Model):
 
 
 class SimpleArticle(models.Model):
-    title: models.Charfield[str, str] = models.CharField(
+    title: models.CharField[str, str] = models.CharField(
         max_length=200,
     )
     body: models.TextField[str, str] = models.TextField()
@@ -24,4 +24,4 @@ class SimpleArticle(models.Model):
     )
 
     def __str__(self) -> str:
-        return self.title
+        return str(self.title)

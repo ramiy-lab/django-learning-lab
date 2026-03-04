@@ -15,7 +15,7 @@ else:
 
 
 class SimpleArticleForm(BaseArticleForm):
-    author_name: forms.Charfield = forms.CharField(
+    author_name: forms.CharField = forms.CharField(
         max_length=100,
         label="Author Name",
     )
