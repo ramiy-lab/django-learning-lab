@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from django import forms
-from django.db import transaction
 
 from .models import Author, SimpleArticle
 
@@ -45,11 +44,33 @@ class SimpleArticleForm(BaseArticleForm):
 
         return normalized
 
+    def clean(self) -> dict[str, Any]:
+        """
+        フォーム全体のバリデーション
+
+        ルール:
+        ・title に "draft" が含まれる場合
+         → body は必須
+        """
+        cleaned_data: dict[str, Any] = super().clean()
+
+        title: str | None = cleaned_data.get("title")
+        body: str | None = cleaned_data.get("body")
+
+        if title is None:
+            return cleaned_data
+
+        if "draft" in title.lower():
+            if not body:
+                self.add_error("body", "draft記事の場合、本文は必須です")
+
+        return cleaned_data
+
     def save(self, commit: bool = True) -> SimpleArticle:
         article: SimpleArticle = super().save(commit=False)
 
         author_name: str = self.cleaned_data["author_name"]
-        author, _cleaned = Author.objects.get_or_create(name=author_name)
+        author, _created = Author.objects.get_or_create(name=author_name)
 
         article.author = author
 
