@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from django import forms
 
@@ -52,7 +52,7 @@ class SimpleArticleForm(BaseArticleForm):
         ・title に "draft" が含まれる場合
          → body は必須
         """
-        cleaned_data: dict[str, Any] = super().clean()
+        cleaned_data = cast(dict[str, Any], super().clean())
 
         title: str | None = cleaned_data.get("title")
         body: str | None = cleaned_data.get("body")
