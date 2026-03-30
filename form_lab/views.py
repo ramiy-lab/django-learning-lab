@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
@@ -18,7 +18,7 @@ def article_create_view(request: HttpRequest) -> HttpResponse:
         form: SimpleArticleForm = SimpleArticleForm(data=request.POST)
 
         if form.is_valid():
-            cleaned_data: dict[str, Any] = form.cleaned_data
+            cleaned_data = cast(dict[str, Any], form.cleaned_data)
 
             # TypedDictに詰め替え
             service_input: ArticleInput = {
