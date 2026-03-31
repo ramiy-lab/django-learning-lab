@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from typing import TypedDict
+from pydantic import BaseModel
 
-from django.db import transaction
+from django.db import connection, transaction
 
 from .models import Author, SimpleArticle
+from .types import ArticleInput
 
 
-class ArticleInput(TypedDict):
+class ArticleSchema(BaseModel):
     title: str
     body: str
     author_name: str
@@ -15,39 +16,28 @@ class ArticleInput(TypedDict):
 
 def create_article(*, data: ArticleInput) -> SimpleArticle:
     """
-    記事作成のService関数
+    SQLで記事を作成するService関数
     """
+    validated = ArticleSchema(**data)
 
     with transaction.atomic():
-        author, _created = Author.objects.get_or_create(
-            name=data["author_name"]
-        )
+        author, _created = Author.objects.get_or_create(name=validated.author_name)
 
-        article: SimpleArticle = Author.objects.get_or_create(
-            title=data["title"],
-            body=data["body"],
-            author=author,
-        )
+        with connection.cursor() as cursor:
+            sql = """
+            INSERT INTO form_lab_simplearticle (title, body, author_id)
+            VALUES (%s, %s, %s)
+            RETURNING id
+            """
+            cursor.execute(sql, [validated.title, validated.body, author.id])
 
-    return article
+            row: tuple[int] | None = cursor.fetchone()
 
+        if row is None:
+            raise RuntimeError("Failed to insert article")
 
-def update_article(*, article_id: int, data: ArticleInput) -> SimpleArticle:
-    """
-    記事更新のService
-    """
+        article_id: int = row[0]
 
-    with transaction.atomic():
         article: SimpleArticle = SimpleArticle.objects.get(id=article_id)
-
-        author, _created = Author.objects.get_or_created(
-            name=data["author_name"]
-        )
-
-        article.title = data["title"]
-        article.body = data["body"]
-        article.author = author
-
-        article.save()
 
     return article

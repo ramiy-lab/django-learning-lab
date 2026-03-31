@@ -1,33 +1,28 @@
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import cast
 
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
 from .forms import SimpleArticleForm
-from .services import handle_article_input, ArticleInput
+from .services import create_article
+from .types import ArticleInput
 
 
 def article_create_view(request: HttpRequest) -> HttpResponse:
-    """
-    記事作成ビュー (Form → Service接続)
-    """
-
     if request.method == "POST":
-        form: SimpleArticleForm = SimpleArticleForm(data=request.POST)
+        form = SimpleArticleForm(request.POST)
 
         if form.is_valid():
-            cleaned_data = cast(dict[str, Any], form.cleaned_data)
-
-            # TypedDictに詰め替え
+            cleaned_data = cast(ArticleInput, form.cleaned_data)
             service_input: ArticleInput = {
                 "title": cleaned_data["title"],
                 "body": cleaned_data["body"],
                 "author_name": cleaned_data["author_name"],
             }
 
-            handle_article_input(data=service_input)
+            create_article(data=service_input)
 
             return redirect("form_lab:article_create")
 

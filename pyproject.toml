@@ -60,7 +60,10 @@ exclude = [
   "^pages/migrations/.*$",
 ]
 
-plugins = ["mypy_django_plugin.main"]
+plugins = [
+  "mypy_django_plugin.main",
+  "pydantic.mypy",
+]
 
 
 # ==============================================================
