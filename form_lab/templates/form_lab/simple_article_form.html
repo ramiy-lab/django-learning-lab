@@ -1,7 +1,13 @@
 {% extends "pages/base.html" %}
 
 {% block content %}
-<h2>Create Article</h2>
+<h2>
+  {% if mode == "update" %}
+    Update Article
+  {% else %}
+    Create Article
+  {% endif %}
+</h2>
 
 <form method="post">
   {% csrf_token %}
@@ -26,7 +32,13 @@
     {{ form.author_name.errors }}
   </p>
 
-  <button type="submit">Submit</button>
+  <button type="submit">
+    {% if mode == "update" %}
+      更新
+    {% else %}
+      作成
+    {% endif %}
+  </button>
 
 </form>
 
