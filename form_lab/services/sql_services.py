@@ -58,7 +58,7 @@ def list_articles() -> List[Tuple[int, str, str]]:
 
     with connection.cursor() as cursor:
         cursor.execute(sql)
-        rows: list[tuple[int, str, str]] = cursor.fetchall()
+        rows: List[tuple[int, str, str]] = cursor.fetchall()
 
     return rows
 
