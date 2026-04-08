@@ -16,6 +16,8 @@ from .services import (
     list_articles,
     update_article,
     delete_article,
+    fetch_articles_with_authors,
+    fetch_articles_with_authors_left,
 )
 from .types import ArticleInput
 
@@ -42,13 +44,42 @@ def article_create_view(request: HttpRequest) -> HttpResponse:
     return render(request, "form_lab/simple_article_form.html", {"form": form})
 
 
-def article_list_view(request: HttpRequest) -> HttpResponse:
+def article_list_plain_view(request: HttpRequest) -> HttpResponse:
     articles = list_articles()
+
+    print("DEBUG:", articles)
 
     return render(
         request,
         "form_lab/article_list.html",
-        {"articles": articles},
+        {
+            "articles": articles,
+            "mode": "plain",
+        },
+    )
+
+
+def article_list_with_author_view(request: HttpRequest) -> HttpResponse:
+    articles = fetch_articles_with_authors()
+    return render(
+        request,
+        "form_lab/article_list.html",
+        {
+            "articles": articles,
+            "mode": "with_author",
+        },
+    )
+
+
+def article_list_with_author_left_view(request: HttpRequest) -> HttpResponse:
+    articles = fetch_articles_with_authors_left()
+    return render(
+        request,
+        "form_lab/article_list.html",
+        {
+            "articles": articles,
+            "mode": "with_author_left",
+        },
     )
 
 
@@ -91,9 +122,7 @@ def article_update_view(request: HttpRequest, article_id: int) -> HttpResponse:
     )
 
 
-def article_delete_view(
-    request: HttpRequest, article_id: int
-) -> HttpResponse:
+def article_delete_view(request: HttpRequest, article_id: int) -> HttpResponse:
 
     if request.method == "POST":
         delete_article(article_id=article_id)

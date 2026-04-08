@@ -11,8 +11,18 @@ urlpatterns = [
     ),
     path(
         "articles/",
-        views.article_list_view,
-        name="article_list",
+        views.article_list_plain_view,
+        name="article_list_plain",
+    ),
+    path(
+        "articles/with-author/",
+        views.article_list_with_author_view,
+        name="article_list_with_author",
+    ),
+    path(
+        "articles/with-author-left/",
+        views.article_list_with_author_left_view,
+        name="article_list_with_author_left",
     ),
     path(
         "articles/<int:article_id>/update/",

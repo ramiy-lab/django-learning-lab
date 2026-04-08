@@ -7,8 +7,24 @@
 <ul>
     {% for article in articles %}
         <li>
-            <strong>{{ article.1 }}</strong><br>
-            {{ article.2 }}
+
+            {% if mode == "with_author" %}
+                {# INNER JOIN #}
+                <strong>{{ article.title }}</strong><br>
+                {{ article.author_name }}
+
+            {% elif mode == "with_author_left" %}
+                {# LEFT JOIN #}
+                <strong>{{ article.title }}</strong><br>
+                {{ article.author_name|default:" (著者なし) "}}
+
+            {% else %}
+                {# plain (tuple) #}
+                <strong>{{ article.1 }}</strong><br>
+                {{ article.2 }}
+
+            {% endif %}
+
         </li>
     {% endfor %}
 </ul>

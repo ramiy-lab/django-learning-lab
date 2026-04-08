@@ -2,18 +2,11 @@ from __future__ import annotations
 
 from typing import List, Tuple
 
-from pydantic import BaseModel
-
 from django.db import connection, transaction
 
-from .models import Author, SimpleArticle
-from .types import ArticleInput
-
-
-class ArticleSchema(BaseModel):
-    title: str
-    body: str
-    author_name: str
+from ..models import Author, SimpleArticle
+from ..types import ArticleInput
+from ..schemas import ArticleSchema
 
 
 def create_article(*, data: ArticleInput) -> SimpleArticle:
