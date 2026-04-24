@@ -18,6 +18,7 @@ from .services import (
     delete_article,
     fetch_articles_with_authors,
     fetch_articles_with_authors_left,
+    get_article_stats,
 )
 from .types import ArticleInput
 
@@ -130,3 +131,17 @@ def article_delete_view(request: HttpRequest, article_id: int) -> HttpResponse:
         return redirect("form_lab:article_list")
 
     return redirect("form_lab:article_list")
+
+
+def article_stats_view(request):
+    stats = get_article_stats()
+
+    article_count, total_length, avg_length = stats
+
+    context = {
+        "article_count": article_count,
+        "total_length": total_length,
+        "avg_length": avg_length,
+    }
+
+    return render(request, "form_lab/article_stats.html", context)

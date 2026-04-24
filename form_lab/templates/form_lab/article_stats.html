@@ -1,0 +1,13 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<h2>記事集計</h2>
+
+<ul>
+    <li>記事数: {{ article_count }}</li>
+    <li>総文字数: {{ total_length }}</li>
+    <li>平均文字数: {{ avg_length|floatformat:2 }}</li>
+</ul>
+
+{% endblock %}

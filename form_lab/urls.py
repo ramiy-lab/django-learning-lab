@@ -34,4 +34,9 @@ urlpatterns = [
         views.article_delete_view,
         name="article_delete",
     ),
+    path(
+        "stats/",
+        views.article_stats_view,
+        name="article_stats",
+    )
 ]
