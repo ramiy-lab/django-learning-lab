@@ -15,16 +15,21 @@ def create_article(*, data: ArticleInput) -> SimpleArticle:
     """
     validated = ArticleSchema(**data)
 
+    body_length: int = len(validated.body)
+
     with transaction.atomic():
         author, _created = Author.objects.get_or_create(name=validated.author_name)
 
         with connection.cursor() as cursor:
             sql = """
-            INSERT INTO form_lab_simplearticle (title, body, author_id)
-            VALUES (%s, %s, %s)
+            INSERT INTO form_lab_simplearticle (title, body, author_id, body_length)
+            VALUES (%s, %s, %s, %s)
             RETURNING id
             """
-            cursor.execute(sql, [validated.title, validated.body, author.id])
+            cursor.execute(
+                sql,
+                [validated.title, validated.body, author.id, body_length],
+            )
 
             row: tuple[int] | None = cursor.fetchone()
 
@@ -63,19 +68,27 @@ def update_article(*, article_id: int, data: ArticleInput) -> SimpleArticle:
 
     validated = ArticleSchema(**data)
 
+    body_length: int = len(validated.body)
+
     with transaction.atomic():
         author, _created = Author.objects.get_or_create(name=validated.author_name)
 
         sql = """
         UPDATE form_lab_simplearticle
-        SET title = %s, body = %s, author_id = %s
+        SET title = %s, body = %s, author_id = %s, body_length = %s
         WHERE id = %s
         """
 
         with connection.cursor() as cursor:
             cursor.execute(
                 sql,
-                [validated.title, validated.body, author.id, article_id],
+                [
+                    validated.title,
+                    validated.body,
+                    author.id,
+                    body_length,
+                    article_id,
+                ],
             )
 
         article: SimpleArticle = SimpleArticle.objects.get(id=article_id)
@@ -96,3 +109,27 @@ def delete_article(*, article_id: int) -> None:
 
         with connection.cursor() as cursor:
             cursor.execute(sql, [article_id])
+
+
+def get_article_stats() -> Tuple[int, int, float]:
+    """
+    記事の集計を取得する
+    (COUNT, SUM, AVG)
+    """
+
+    sql = """
+    SELECT
+        COUNT(sa.id) AS article_count,
+        SUM(sa.body_length) AS total_length,
+        AVG(sa.body_length) AS avg_length
+    FROM form_lab_simplearticle AS sa
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql)
+        row: tuple[int, int, float] | None = cursor.fetchone()
+
+    if row is None:
+        raise RuntimeError("Failed to fetch stats")
+
+    return row

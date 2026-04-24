@@ -1,6 +1,6 @@
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
-from django.db import transaction
+from django.db import transaction, Count, Sum, Avg
 
 from ..models import Author, SimpleArticle
 from ..types import ArticleInput
@@ -13,6 +13,8 @@ def create_article(*, data: ArticleInput) -> SimpleArticle:
     """
     validated = ArticleSchema(**data)
 
+    body_length: int = len(validated.body)
+
     with transaction.atomic():
         author, _created = Author.objects.get_or_create(name=validated.author_name)
 
@@ -20,6 +22,7 @@ def create_article(*, data: ArticleInput) -> SimpleArticle:
             title=validated.title,
             body=validated.body,
             author=author,
+            body_length=body_length,
         )
 
     return article
@@ -46,14 +49,17 @@ def update_article(*, article_id: int, data: ArticleInput) -> SimpleArticle:
 
     validated = ArticleSchema(**data)
 
-    with transaction.atomic():
-        article: SimpleArticle = SimpleArticle.objects.get(id=article_id)
+    body_length: int = len(validated.body)
 
+    with transaction.atomic():
         author, _created = Author.objects.get_or_create(name=validated.author_name)
+
+        article: SimpleArticle = SimpleArticle.objects.get(id=article_id)
 
         article.title = validated.title
         article.body = validated.body
         article.author = author
+        article.body_length = body_length
 
         article.save()
 
@@ -68,3 +74,17 @@ def delete_article(*, article_id: int) -> None:
     with transaction.atomic():
         article: SimpleArticle = SimpleArticle.objects.get(id=article_id)
         article.delete()
+
+
+def get_article_stats() -> Dict[str, float]:
+    """
+    ORMで集計を取得する
+    """
+
+    result = SimpleArticle.objects.aggregate(
+        article_count=Count("id"),
+        total_length=Sum("body_length"),
+        avg_length=Avg("body_length"),
+    )
+
+    return result
