@@ -44,5 +44,14 @@ urlpatterns = [
         views.article_stats_by_author_view,
         name="article_stats_by_author",
     ),
-    path("popular-authors/", views.popular_authors_view, name="popular_authors"),
+    path(
+        "popular-authors/",
+        views.popular_authors_view,
+        name="popular_authors"
+    ),
+    path(
+        "null-aggregation/",
+        views.null_aggregation_view,
+        name="null_aggregation"
+    ),
 ]

@@ -181,3 +181,28 @@ def get_popular_authors(*, min_articles: int) -> List[Tuple[str, int]]:
         rows: List[Tuple[str, int]] = cursor.fetchall()
 
     return rows
+
+
+def get_null_aggregation_stats() -> Tuple[int, int | None, float | None]:
+    """
+    NULLを含むデータの集計挙動を確認する
+    (COUNT(*), SUM, AVG)
+    """
+
+    sql = """
+    SELECT
+        COUNT(*) AS total_rows,
+        COUNT(sa.body_length) AS non_null_count,
+        SUM(sa.body_length) AS total_length,
+        AVG(sa.body_length) AS avg_length
+    FROM form_lab_simplearticle AS sa
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql)
+        row: tuple[int, int | None, float | None] | None = cursor.fetchone()
+
+    if row is None:
+        raise RuntimeError("Failed to fetch stats")
+
+    return row

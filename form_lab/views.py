@@ -21,6 +21,7 @@ from .services import (
     get_article_stats,
     get_article_stats_by_author,
     get_popular_authors,
+    get_null_aggregation_stats,
 )
 from .types import ArticleInput
 
@@ -168,3 +169,18 @@ def popular_authors_view(request: HttpRequest) -> HttpResponse:
     }
 
     return render(request, "form_lab/popular_authors.html", context)
+
+
+def null_aggregation_view(request: HttpRequest) -> HttpResponse:
+    stats = get_null_aggregation_stats()
+
+    total_rows, non_null_count, total_length, avg_length = stats
+
+    context = {
+        "total_rows": total_rows,
+        "total_length": total_length,
+        "avg_length": avg_length,
+        "non_null_count": non_null_count,
+    }
+
+    return render(request, "form_lab/null_aggregation.html", context)

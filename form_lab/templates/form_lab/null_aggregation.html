@@ -1,0 +1,26 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<h2>NULLを含む集計結果</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>総行数</th>
+            <th>文字数ありの記事数</th>
+            <th>合計文字数</th>
+            <th>平均文字数</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ total_rows }}</td>
+            <td>{{ non_null_count }}</td>
+            <td>{{ total_length }}</td>
+            <td>{{ avg_length }}</td>
+        </tr>
+    </tbody>
+</table>
+
+{% endblock %}
