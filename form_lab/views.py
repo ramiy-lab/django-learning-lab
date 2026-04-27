@@ -22,6 +22,7 @@ from .services import (
     get_article_stats_by_author,
     get_popular_authors,
     get_null_aggregation_stats,
+    get_article_counts_by_author,
 )
 from .types import ArticleInput
 
@@ -184,3 +185,13 @@ def null_aggregation_view(request: HttpRequest) -> HttpResponse:
     }
 
     return render(request, "form_lab/null_aggregation.html", context)
+
+
+def article_counts_by_author_view(request: HttpRequest) -> HttpResponse:
+    stats = get_article_counts_by_author()
+
+    context = {
+        "stats": stats,
+    }
+
+    return render(request, "form_lab/article_counts_by_author.html", context)

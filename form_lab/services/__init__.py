@@ -19,6 +19,7 @@ from .sql_services import (
 #     get_popular_authors,
 # )
 
+from .orm_services import get_article_counts_by_author
 
 from .join_sql_services import (
     fetch_articles_with_authors,
@@ -42,4 +43,5 @@ __all__ = [
     "get_article_stats_by_author",
     "get_popular_authors",
     "get_null_aggregation_stats",
+    "get_article_counts_by_author",
 ]

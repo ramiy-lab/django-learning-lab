@@ -47,11 +47,16 @@ urlpatterns = [
     path(
         "popular-authors/",
         views.popular_authors_view,
-        name="popular_authors"
+        name="popular_authors",
     ),
     path(
         "null-aggregation/",
         views.null_aggregation_view,
-        name="null_aggregation"
+        name="null_aggregation",
+    ),
+    path(
+        "article-counts-by-author/",
+        views.article_counts_by_author_view,
+        name="article_counts_by_author",
     ),
 ]

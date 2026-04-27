@@ -5,7 +5,7 @@ from django.db.models import Count, Sum, Avg
 
 from ..models import Author, SimpleArticle
 from ..types import ArticleInput
-from ..schema import ArticleSchema
+from ..schemas import ArticleSchema
 
 
 def create_article(*, data: ArticleInput) -> SimpleArticle:
@@ -133,3 +133,21 @@ def get_popular_authors(*, min_articles: int) -> List[Tuple[str, int]]:
     )
 
     return [(row["author__name"], int(row["article_count"])) for row in results]
+
+
+def get_article_counts_by_author() -> List[Tuple[str, int]]:
+    """
+    ORMで著者ごとの記事数を取得する (GROUP BY + COUNT)
+    """
+
+    results = (
+        SimpleArticle.objects
+        .values("author__name")
+        .annotate(article_count=Count("id"))
+        .order_by("-article_count")
+    )
+
+    return [
+        (row["author__name"], int(row["article_count"]))
+        for row in results
+    ]
