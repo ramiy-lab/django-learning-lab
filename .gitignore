@@ -25,3 +25,5 @@ notes/
 .coverage
 
 logs/*.log
+
+db.sqlite3
