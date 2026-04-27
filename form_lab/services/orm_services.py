@@ -1,6 +1,7 @@
-from typing import List, Tuple, Dict
+from typing import List, Tuple
 
-from django.db import transaction, Count, Sum, Avg
+from django.db import transaction
+from django.db.models import Count, Sum, Avg
 
 from ..models import Author, SimpleArticle
 from ..types import ArticleInput
@@ -76,7 +77,7 @@ def delete_article(*, article_id: int) -> None:
         article.delete()
 
 
-def get_article_stats() -> Dict[str, float]:
+def get_article_stats() -> Tuple[int, int, float]:
     """
     ORMで集計を取得する
     """
@@ -87,4 +88,48 @@ def get_article_stats() -> Dict[str, float]:
         avg_length=Avg("body_length"),
     )
 
-    return result
+    article_count: int = int(result["article_count"] or 0)
+    total_length: int = int(result["total_length"] or 0)
+    avg_length: float = float(result["avg_length"] or 0.0)
+
+    return (article_count, total_length, avg_length)
+
+
+def get_article_stats_by_author() -> List[Tuple[str, int, float]]:
+    """
+    ORMで著者ごとの集計を取得する
+    """
+
+    results = (
+        SimpleArticle.objects.values("author__name")
+        .annotate(
+            article_count=Count("id"),
+            avg_length=Avg("body_length"),
+        )
+        .order_by("-article_count")
+    )
+
+    return [
+        (
+            row["author__name"],
+            row["article_count"],
+            row["avg_length"],
+        )
+        for row in results
+    ]
+
+
+def get_popular_authors(*, min_articles: int) -> List[Tuple[str, int]]:
+    """
+    記事数が min_articles 件以上の著者を取得する (ORM)
+    """
+
+    results = (
+        SimpleArticle.objects
+        .values("author__name")
+        .annotate(article_count=Count("id"))
+        .filter(article_count__gte=min_articles)
+        .order_by("-article_count")
+    )
+
+    return [(row["author__name"], int(row["article_count"])) for row in results]
