@@ -133,3 +133,51 @@ def get_article_stats() -> Tuple[int, int, float]:
         raise RuntimeError("Failed to fetch stats")
 
     return row
+
+
+def get_article_stats_by_author() -> List[Tuple[str, int, float]]:
+    """
+    著者ごとの記事数・平均文字数を取得する
+    """
+
+    sql = """
+    SELECT
+        a.name AS author_name,
+        COUNT(sa.id) AS article_count,
+        AVG(sa.body_length) AS avg_length
+    FROM form_lab_simplearticle AS sa
+    INNER JOIN form_lab_author AS a
+        ON sa.author_id = a.id
+    GROUP BY a.name
+    ORDER BY article_count DESC
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql)
+        rows: List[tuple[str, int, float]] = cursor.fetchall()
+
+    return rows
+
+
+def get_popular_authors(*, min_articles: int) -> List[Tuple[str, int]]:
+    """
+    記事数が min_articles 剣以上の著者を取得する (SQL + HAVING)
+    """
+
+    sql = """
+    SELECT
+        a.name AS author_name,
+        COUNT(sa.id) AS article_count
+    FROM form_lab_simplearticle AS sa
+    INNER JOIN form_lab_author AS a
+        ON sa.author_id = a.id
+    GROUP BY a.name
+    HAVING COUNT(sa.id) >= %s
+    ORDER BY article_count DESC
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql, [min_articles])
+        rows: List[Tuple[str, int]] = cursor.fetchall()
+
+    return rows
