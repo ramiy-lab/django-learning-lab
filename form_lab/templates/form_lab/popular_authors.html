@@ -1,0 +1,24 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<h2>記事数 {{ min_articles }} 件以上の著者</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>著者</th>
+            <th>記事数</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for author_name, article_count in stats %}
+        <tr>
+            <td>{{ author_name }}</td>
+            <td>{{ article_count }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

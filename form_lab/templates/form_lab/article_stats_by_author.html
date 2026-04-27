@@ -1,0 +1,26 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<h2>著者ごとの記事集計</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>著者</th>
+            <th>記事数</th>
+            <th>平均文字数</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for author_name, article_count, avg_length in stats %}
+        <tr>
+            <td>{{ author_name }}</td>
+            <td>{{ article_count }}</td>
+            <td>{{ avg_length|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

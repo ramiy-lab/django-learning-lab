@@ -19,6 +19,8 @@ from .services import (
     fetch_articles_with_authors,
     fetch_articles_with_authors_left,
     get_article_stats,
+    get_article_stats_by_author,
+    get_popular_authors,
 )
 from .types import ArticleInput
 
@@ -133,7 +135,7 @@ def article_delete_view(request: HttpRequest, article_id: int) -> HttpResponse:
     return redirect("form_lab:article_list")
 
 
-def article_stats_view(request):
+def article_stats_view(request: HttpRequest) -> HttpResponse:
     stats = get_article_stats()
 
     article_count, total_length, avg_length = stats
@@ -145,3 +147,24 @@ def article_stats_view(request):
     }
 
     return render(request, "form_lab/article_stats.html", context)
+
+
+def article_stats_by_author_view(request: HttpRequest) -> HttpResponse:
+    stats = get_article_stats_by_author()
+
+    context = {
+        "stats": stats,
+    }
+
+    return render(request, "form_lab/article_stats_by_author.html", context)
+
+
+def popular_authors_view(request: HttpRequest) -> HttpResponse:
+    stats = get_popular_authors(min_articles=5)
+
+    context = {
+        "stats": stats,
+        "min_articles": 5,
+    }
+
+    return render(request, "form_lab/popular_authors.html", context)

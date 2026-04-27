@@ -38,5 +38,11 @@ urlpatterns = [
         "stats/",
         views.article_stats_view,
         name="article_stats",
-    )
+    ),
+    path(
+        "stats-by-author/",
+        views.article_stats_by_author_view,
+        name="article_stats_by_author",
+    ),
+    path("popular-authors/", views.popular_authors_view, name="popular_authors"),
 ]
