@@ -1,0 +1,25 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<h1>My page</h1>
+
+<p>
+    <a href="{% url 'pages:article_create' %}">記事を作成</a>
+</p>
+
+<ul>
+    {% for article in articles %}
+        <li>
+            <a href="{% url 'pages:article_detail' article.id %}">
+                <strong>{{ article.title }}</strong>
+            </a>
+        </li>
+    {% empty %}
+        <li>まだ記事がありません</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'pages:dashboard' %}">ダッシュボードへ戻る</a>
+
+{% endblock %}

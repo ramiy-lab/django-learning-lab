@@ -1,0 +1,41 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<h1>ダッシュボード</h1>
+
+<hr>
+
+<h2>ログイン状態</h2>
+
+{% if user.is_authenticated %}
+    <p>✅ ログイン中です</p>
+{% else %}
+    <p>✖ 未ログインです</p>
+{% endif %}
+
+<hr>
+
+<h2>ユーザー情報 (デバッグ)</h2>
+
+<ul>
+    <li>user: {{ user }}</li>
+    <li>is_authenticated: {{ user.is_authenticated }}</li>
+    <li>username: {{ user.username }}</li>
+    <li>id: {{ user.id }}</li>
+</ul>
+
+<nav>
+    <ul>
+        <li><a href="{% url 'pages:login' %}">lOGIN</a></li>
+        <li><a href="{% url 'pages:home' %}">Home</a></li>
+        <li><a href="{% url 'pages:mypage' %}">My page</a></li>
+    </ul>
+</nav>
+
+<form method="post" action="{% url 'pages:logout' %}">
+    {% csrf_token %}
+    <button type="submit">ログアウト</button>
+</form>
+
+{% endblock %}

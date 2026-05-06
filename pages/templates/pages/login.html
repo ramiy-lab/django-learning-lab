@@ -1,0 +1,44 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<h1>ログイン</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div>
+        <label>ユーザー名</label>
+        {{ form.username }}
+    </div>
+
+    <div>
+        <label>パスワード</label>
+        <input
+            type="password"
+            name="password"
+            id="password-field"
+            required
+        >
+        <button type="button" onclick="togglePassword()">表示</button>
+    </div>
+
+    <button type="submit">ログイン</button>
+</form>
+
+{% if form.errors %}
+    <p style="color:red">ログインに失敗しました</p>
+{% endif %}
+
+<script>
+function togglePassword() {
+    const passwordInput = document.getElementById("password-field");
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+    } else {
+        passwordInput.type = "password";
+    }
+}
+</script>
+
+{% endblock %}
