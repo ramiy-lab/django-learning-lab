@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 from django.db import models
+from django.contrib.auth.models import User
+
 from django.utils import timezone
 
 
@@ -20,10 +24,11 @@ class Article(models.Model):
         verbose_name="本文",
     )
 
-    author = models.ForeignKey(
-        Author,
+    user: models.ForeignKey[User] = models.ForeignKey(
+        User,
         on_delete=models.CASCADE,
         related_name="articles",
+        null=True,
     )
 
     created_at = models.DateTimeField(

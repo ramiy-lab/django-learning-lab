@@ -1,0 +1,22 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+<h1>記事作成</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div>
+        <label>タイトル</label>
+        <input type="text" name="title" required>
+    </div>
+
+    <div>
+        <label>本文</label>
+        <textarea name="body" required></textarea>
+    </div>
+
+    <button type="submit">作成</button>
+</form>
+
+{% endblock %}

@@ -125,8 +125,7 @@ def get_popular_authors(*, min_articles: int) -> List[Tuple[str, int]]:
     """
 
     results = (
-        SimpleArticle.objects
-        .values("author__name")
+        SimpleArticle.objects.values("author__name")
         .annotate(article_count=Count("id"))
         .filter(article_count__gte=min_articles)
         .order_by("-article_count")
@@ -141,13 +140,9 @@ def get_article_counts_by_author() -> List[Tuple[str, int]]:
     """
 
     results = (
-        SimpleArticle.objects
-        .values("author__name")
+        SimpleArticle.objects.values("author__name")
         .annotate(article_count=Count("id"))
         .order_by("-article_count")
     )
 
-    return [
-        (row["author__name"], int(row["article_count"]))
-        for row in results
-    ]
+    return [(row["author__name"], int(row["article_count"])) for row in results]

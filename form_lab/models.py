@@ -22,7 +22,7 @@ class SimpleArticle(models.Model):
         Author,
         on_delete=models.CASCADE,
     )
-    body_length: models.IntegerField[int, int] = models.IntegerField(
+    body_length: models.IntegerField[int | None, int | None] = models.IntegerField(
         null=True,
         default=0,
     )
