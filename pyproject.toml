@@ -65,6 +65,8 @@ plugins = [
   "pydantic.mypy",
 ]
 
+disable_error_code = ["misc"]
+
 
 # ==============================================================
 # 🔹 django-stubs 設定
