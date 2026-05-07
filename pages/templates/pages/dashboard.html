@@ -21,15 +21,38 @@
 <ul>
     <li>user: {{ user }}</li>
     <li>is_authenticated: {{ user.is_authenticated }}</li>
+    <li>staff: {{ user.is_staff }}</li>
+    <li>superuser: {{ user.is_superuser}}</li>
     <li>username: {{ user.username }}</li>
     <li>id: {{ user.id }}</li>
 </ul>
+
+<h2>Permission確認</h2>
+
+<ul>
+    <li>add_article: {{ can_add_article }}</li>
+    <li>change_article: {{ can_change_article }}</li>
+    <li>delete_article: {{ can_delete_article }}</li>
+</ul>
+
+{% if user.is_staff %}
+    <div>
+        <h2>管理者メニュー</h2>
+
+        <ul>
+            <li>記事管理</li>
+            <li>ユーザー管理</li>
+            <li>運営用ページ</li>
+        </ul>
+    </div>
+{% endif %}
 
 <nav>
     <ul>
         <li><a href="{% url 'pages:login' %}">lOGIN</a></li>
         <li><a href="{% url 'pages:home' %}">Home</a></li>
         <li><a href="{% url 'pages:mypage' %}">My page</a></li>
+        <li><a href="{% url 'pages:admin_only' %}">管理者専用ページ</a></li>
     </ul>
 </nav>
 

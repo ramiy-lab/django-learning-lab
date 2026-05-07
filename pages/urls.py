@@ -7,6 +7,7 @@ from .views import (
     mypage_view,
     create_article_view,
     article_detail_view,
+    admin_only_view,
 )
 
 app_name = "pages"
@@ -47,5 +48,10 @@ urlpatterns = [
         "articles/<int:article_id>/",
         article_detail_view,
         name="article_detail",
+    ),
+    path(
+        "admin-only/",
+        admin_only_view,
+        name="admin_only",
     ),
 ]

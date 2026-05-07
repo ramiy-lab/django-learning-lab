@@ -2,6 +2,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 
 from pages.models import Article
 from pages.services import (
@@ -44,7 +45,29 @@ def dashboard_view(request: HttpRequest) -> HttpResponse:
     print("is_authenticated:", request.user.is_authenticated)
     print("==========================")
 
-    return render(request, "pages/dashboard.html")
+    can_add_article: bool = request.user.has_perm(
+        "pages.add_article"
+    )
+
+    can_change_article: bool = request.user.has_perm(
+        "pages.change_article"
+    )
+
+    can_delete_article: bool = request.user.has_perm(
+        "pages.delete_article"
+    )
+
+    context = {
+        "can_add_article": can_add_article,
+        "can_change_article": can_change_article,
+        "can_delete_article": can_delete_article,
+    }
+
+    return render(
+        request,
+        "pages/dashboard.html",
+        context,
+    )
 
 
 @login_required
@@ -109,4 +132,18 @@ def article_detail_view(request: HttpRequest, article_id: int) -> HttpResponse:
         request,
         "pages/article_detail.html",
         {"article": article},
+    )
+
+
+@login_required
+def admin_only_view(request: HttpRequest) -> HttpResponse:
+    """
+    管理者専用ページ
+    """
+    if not request.user.has_perm("pages.delete_article"):
+        raise PermissionDenied
+
+    return render(
+        request,
+        "pages/admin_only.html",
     )

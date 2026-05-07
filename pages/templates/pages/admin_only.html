@@ -1,0 +1,15 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<h1>管理者専用ページ</h1>
+
+<p>
+    delete_article Permission を持つユーザーだけ見れます
+</p>
+
+<p>
+    <a href="{% url 'pages:dashboard' %}">ダッシュボードへ戻る</a>
+</p>
+
+{% endblock %}
