@@ -1,0 +1,27 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<h1>Delete Article</h1>
+
+<p>
+    本当に削除しますか？
+</p>
+
+<h2>{{ article.title }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <button type="submit">
+        Delete
+    </button>
+</form>
+
+<p>
+    <a href="{% url 'pages:article_list' %}">
+        Cancel
+    </a>
+</p>
+
+{% endblock %}

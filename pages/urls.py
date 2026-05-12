@@ -1,6 +1,6 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-from .views import (
+from pages.views import (
     page_detail,
     dashboard_view,
     home_view,
@@ -8,6 +8,13 @@ from .views import (
     create_article_view,
     article_detail_view,
     admin_only_view,
+    HelloView,
+    AboutPageView,
+    ArticleListView,
+    ArticleCreateView,
+    ArticleUpdateView,
+    ArticleDeleteView,
+    ContactFormView,
 )
 
 app_name = "pages"
@@ -54,4 +61,39 @@ urlpatterns = [
         admin_only_view,
         name="admin_only",
     ),
+    path(
+        "cbv-hello/",
+        HelloView.as_view(),
+        name="cbv_hello",
+    ),
+    path(
+        "about/",
+        AboutPageView.as_view(),
+        name="about",
+    ),
+    path(
+        "articles/",
+        ArticleListView.as_view(),
+        name="article_list",
+    ),
+    path(
+        "article/create/",
+        ArticleCreateView.as_view(),
+        name="article_create",
+    ),
+    path(
+        "articles/<int:pk>/update/",
+        ArticleUpdateView.as_view(),
+        name="article_update",
+    ),
+    path(
+        "articles/<int:pk>/delete/",
+        ArticleDeleteView.as_view(),
+        name="article_delete",
+    ),
+    path(
+        "contact/",
+        ContactFormView.as_view(),
+        name="contact",
+),
 ]

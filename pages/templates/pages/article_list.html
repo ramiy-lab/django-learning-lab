@@ -1,0 +1,32 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<h1>Article List</h1>
+
+<ul>
+    {% for article in articles %}
+        <li>
+            {{ article.title }}
+            <a href="{% url 'pages:article_update' article.pk %}">
+                編集
+            </a>
+
+            <a href="{% url 'pages:article_delete' article.pk %}">
+                削除
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'pages:article_create' %}">
+    Create Article
+</a>
+
+<p>
+    <a href="{% url 'pages:contact' %}">
+        お問い合わせはこちら
+    </a>
+</p>
+
+{% endblock %}
