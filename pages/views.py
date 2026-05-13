@@ -12,6 +12,10 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
     FormView,
+    DetailView,
+)
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
 )
 
 from pages.models import Article
@@ -23,7 +27,6 @@ from pages.services import (
     process_comment,
     create_article,
     list_articles_by_user,
-    get_article_by_user,
 )
 from pages.types import ArticleInput
 
@@ -125,25 +128,6 @@ def create_article_view(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def article_detail_view(request: HttpRequest, article_id: int) -> HttpResponse:
-    """
-    記事詳細 (自分のものだけ)
-    """
-    assert isinstance(request.user, User)
-
-    article = get_article_by_user(
-        user=request.user,
-        article_id=article_id,
-    )
-
-    return render(
-        request,
-        "pages/article_detail.html",
-        {"article": article},
-    )
-
-
-@login_required
 def admin_only_view(request: HttpRequest) -> HttpResponse:
     """
     管理者専用ページ
@@ -191,13 +175,11 @@ class ArticleListView(ListView):
 
     context_object_name = "articles"
 
-    def get_queryset(self):
-        return Article.objects.filter(
-            user=self.request.user,
-        )
 
-
-class ArticleCreateView(CreateView):
+class ArticleCreateView(
+    LoginRequiredMixin,
+    CreateView,
+):
     """
     Article作成CBV
     """
@@ -214,7 +196,10 @@ class ArticleCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ArticleUpdateView(UpdateView):
+class ArticleUpdateView(
+    LoginRequiredMixin,
+    UpdateView,
+):
     """
     Article更新CBV
     """
@@ -230,15 +215,28 @@ class ArticleUpdateView(UpdateView):
     context_object_name = "article"
 
     def get_queryset(self):
-        return Article.objects.filter(
-            user=self.request.user,
+        return Article.objects.all()
+
+    def dispatch(self, request, *args, **kwargs):
+        article = self.get_object()
+
+        if article.user != request.user:
+            raise PermissionDenied
+
+        return super().dispatch(
+            request,
+            *args,
+            **kwargs,
         )
 
     def form_valid(self, form):
         return super().form_valid(form)
 
 
-class ArticleDeleteView(DeleteView):
+class ArticleDeleteView(
+    LoginRequiredMixin,
+    DeleteView,
+):
     """
     Article削除CBV
     """
@@ -290,3 +288,28 @@ class ContactFormView(FormView):
         )
 
         return super().form_valid(form)
+
+
+class ArticleDetailView(
+    LoginRequiredMixin,
+    DetailView,
+):
+    """
+    Article詳細CBV
+    """
+
+    model = Article
+
+    template_name = (
+        "pages/article_detail.html"
+    )
+
+    context_object_name = "article"
+
+
+class DashboardView(TemplateView):
+    """
+    ダッシュボード画面
+    """
+
+    template_name = "pages/dashboard.html"

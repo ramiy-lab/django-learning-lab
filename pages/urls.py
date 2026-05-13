@@ -2,11 +2,9 @@ from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from pages.views import (
     page_detail,
-    dashboard_view,
     home_view,
     mypage_view,
     create_article_view,
-    article_detail_view,
     admin_only_view,
     HelloView,
     AboutPageView,
@@ -15,6 +13,8 @@ from pages.views import (
     ArticleUpdateView,
     ArticleDeleteView,
     ContactFormView,
+    ArticleDetailView,
+    DashboardView,
 )
 
 app_name = "pages"
@@ -28,7 +28,7 @@ urlpatterns = [
     ),
     path(
         "dashboard/",
-        dashboard_view,
+        DashboardView.as_view(),
         name="dashboard",
     ),
     path(
@@ -50,11 +50,6 @@ urlpatterns = [
         "articles/create/",
         create_article_view,
         name="article_create",
-    ),
-    path(
-        "articles/<int:article_id>/",
-        article_detail_view,
-        name="article_detail",
     ),
     path(
         "admin-only/",
@@ -95,5 +90,10 @@ urlpatterns = [
         "contact/",
         ContactFormView.as_view(),
         name="contact",
-),
+    ),
+    path(
+        "articles/<int:pk>/",
+        ArticleDetailView.as_view(),
+        name="article_detail",
+    ),
 ]

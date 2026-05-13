@@ -2,26 +2,46 @@
 
 {% block content %}
 
-<h1>Article List</h1>
+{% if user.is_authenticated %}
+    <p>
+        こんにちは {{ user.username }} さん
+    </p>
+{% else %}
+    <p>
+        こんにちは ゲストさん
+    </p>
+{% endif %}
+
+<h1>記事一覧</h1>
 
 <ul>
     {% for article in articles %}
         <li>
             {{ article.title }}
-            <a href="{% url 'pages:article_update' article.pk %}">
-                編集
-            </a>
+                <a href="{% url 'pages:article_detail' article.pk %}">
+                    記事詳細
+                </a>
 
-            <a href="{% url 'pages:article_delete' article.pk %}">
-                削除
-            </a>
+            {% if user == article.user %}
+                <a href="{% url 'pages:article_update' article.pk %}">
+                    編集
+                </a>
+            {% endif %}
         </li>
     {% endfor %}
 </ul>
 
 <a href="{% url 'pages:article_create' %}">
-    Create Article
+    新規作成
 </a>
+
+<hr>
+
+<p>
+    <a href="{% url 'pages:dashboard' %}">
+        ダッシュボードへ戻る
+    </a>
+</p>
 
 <p>
     <a href="{% url 'pages:contact' %}">
