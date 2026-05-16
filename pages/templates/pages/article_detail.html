@@ -4,11 +4,15 @@
 
 <h1>記事詳細</h1>
 
-<h2>{{ article.title }}</h2>
+<h2>{{ page_title }}</h2>
+
+<p>
+    投稿者: {{ article.user.username }}
+</p>
 
 <p>{{ article.body }}</p>
 
-{% if user == article.user %}
+{% if user == article.user or user.is_superuser %}
 
     <p>
         <a href="{% url 'pages:article_update' article.pk %}">

@@ -1,8 +1,13 @@
-from django.http import HttpRequest, HttpResponse
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseRedirect,
+)
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
+from django.db.models import QuerySet
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import (
@@ -16,6 +21,7 @@ from django.views.generic import (
 )
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
+    PermissionRequiredMixin,
 )
 
 from pages.models import Article
@@ -27,6 +33,8 @@ from pages.services import (
     process_comment,
     create_article,
     list_articles_by_user,
+    update_article,
+    delete_article,
 )
 from pages.types import ArticleInput
 
@@ -175,6 +183,16 @@ class ArticleListView(ListView):
 
     context_object_name = "articles"
 
+    def get_context_data(self, **kwargs: object) -> dict[str, object]:
+        context: dict[str, object] = super().get_context_data(**kwargs)
+
+        article_queryset: QuerySet[Article] = Article.objects.all()
+
+        context["page_title"] = "Public Article List"
+        context["article_count"] = article_queryset.count()
+
+        return context
+
 
 class ArticleCreateView(
     LoginRequiredMixin,
@@ -191,9 +209,21 @@ class ArticleCreateView(
     success_url = reverse_lazy("pages:article_list")
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
+        article_input: ArticleInput = {
+            "title": form.cleaned_data["title"],
+            "body": form.cleaned_data["body"],
+        }
 
-        return super().form_valid(form)
+        article = create_article(
+            user=self.request.user,
+            data=article_input,
+        )
+
+        self.object = article
+
+        return HttpResponseRedirect(
+            self.get_success_url()
+        )
 
 
 class ArticleUpdateView(
@@ -210,8 +240,6 @@ class ArticleUpdateView(
 
     template_name = "pages/article_update.html"
 
-    success_url = reverse_lazy("pages:article_list")
-
     context_object_name = "article"
 
     def get_queryset(self):
@@ -220,7 +248,10 @@ class ArticleUpdateView(
     def dispatch(self, request, *args, **kwargs):
         article = self.get_object()
 
-        if article.user != request.user:
+        if (
+            article.user != request.user
+            and not request.user.is_superuser
+        ):
             raise PermissionDenied
 
         return super().dispatch(
@@ -230,7 +261,29 @@ class ArticleUpdateView(
         )
 
     def form_valid(self, form):
-        return super().form_valid(form)
+        article_input: ArticleInput = {
+            "title": form.cleaned_data["title"],
+            "body": form.cleaned_data["body"],
+        }
+
+        article = self.get_object()
+
+        article = update_article(
+            article=article,
+            data=article_input,
+        )
+
+        self.object = article
+
+        return HttpResponseRedirect(
+            self.get_success_url()
+        )
+
+    def get_success_url(self) -> str:
+        return reverse_lazy(
+            "pages:article_detail",
+            kwargs={"pk": self.object.pk},
+        )
 
 
 class ArticleDeleteView(
@@ -254,8 +307,22 @@ class ArticleDeleteView(
     context_object_name = "article"
 
     def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Article.objects.all()
+
         return Article.objects.filter(
             user=self.request.user,
+        )
+
+    def delete(self, request, *args, **kwargs):
+        article = self.get_object()
+
+        delete_article(
+            article=article,
+        )
+
+        return HttpResponseRedirect(
+            self.get_success_url()
         )
 
 

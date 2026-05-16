@@ -4,6 +4,10 @@
 
 <h1>Update Article</h1>
 
+<p>
+    投稿者: {{ article.user.username }}
+</p>
+
 <form method="post">
     {% csrf_token %}
 

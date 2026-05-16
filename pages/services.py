@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 
 from pages.models import Article
 from pages.types import ArticleInput
+from pages.schemas import ArticleSchema
 
 
 def build_page_context(page: Article, message: str = "") -> dict[str, object]:
@@ -26,16 +27,16 @@ def process_comment(comment: str) -> str:
     return f"コメントを受け付けました: {comment}"
 
 
-def create_article(*, user: User, data: ArticleInput) -> Article:
-    """
-    記事作成 (必ずuserを受け取る)
-    """
-    article: Article = Article.objects.create(
-        title=data["title"],
-        body=data["body"],
-        user=user,
-    )
-    return article
+# def create_article(*, user: User, data: ArticleInput) -> Article:
+#     """
+#     記事作成 (必ずuserを受け取る)
+#     """
+#     article: Article = Article.objects.create(
+#         title=data["title"],
+#         body=data["body"],
+#         user=user,
+#     )
+#     return article
 
 
 def list_articles_by_user(*, user: User) -> List[Article]:
@@ -55,3 +56,45 @@ def get_article_by_user(*, user: User, article_id: int) -> Article:
         user=user,
     )
     return article
+
+
+def create_article(
+    *,
+    user: User,
+    data: ArticleInput,
+) -> Article:
+    article_schema = (
+        ArticleSchema.model_validate(data)
+    )
+    article = Article.objects.create(
+        title=article_schema.title,
+        body=article_schema.body,
+        user=user,
+    )
+
+    return article
+
+
+def update_article(
+    *,
+    article: Article,
+    data: ArticleInput,
+) -> Article:
+    article_schema = (
+        ArticleSchema.model_validate(data)
+    )
+
+    article.title = article_schema.title
+
+    article.body = article_schema.body
+
+    article.save()
+
+    return article
+
+
+def delete_article(
+    *,
+    article: Article,
+) -> None:
+    article.delete()
