@@ -11,12 +11,14 @@ target-version = ["py311"]
 # ==============================================================
 
 [tool.pytest.ini_options]
+
+DJANGO_SETTINGS_MODULE = "django_forge_01_basics.settings"
+
 addopts = "-v -s --tb=short --durations=3 --cov=utils --cov-report=term-missing"
+
 testpaths = ["tests"]
+
 python_files = ["test_*.py"]
-python_paths = [
-    ""
-]
 
 markers = [
     "simple: 基本的なテスト（軽い・PyQ系）",
