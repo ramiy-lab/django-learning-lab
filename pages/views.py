@@ -1,12 +1,18 @@
+from __future__ import annotations
+
+from typing import cast, Any
+
 from django.http import (
     HttpRequest,
     HttpResponse,
+    HttpResponseBase,
     HttpResponseRedirect,
 )
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
+from django.forms import Form
 from django.db.models import QuerySet
 from django.urls import reverse_lazy
 from django.views import View
@@ -172,7 +178,7 @@ class AboutPageView(TemplateView):
     template_name = "pages/about.html"
 
 
-class ArticleListView(ListView):
+class ArticleListView(ListView[Article]):
     """
     Article一覧表示CBV
     """
@@ -183,8 +189,8 @@ class ArticleListView(ListView):
 
     context_object_name = "articles"
 
-    def get_context_data(self, **kwargs: object) -> dict[str, object]:
-        context: dict[str, object] = super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
 
         article_queryset: QuerySet[Article] = Article.objects.all()
 
@@ -196,7 +202,7 @@ class ArticleListView(ListView):
 
 class ArticleCreateView(
     LoginRequiredMixin,
-    CreateView,
+    CreateView[Article, ArticleCreateForm],
 ):
     """
     Article作成CBV
@@ -208,27 +214,28 @@ class ArticleCreateView(
 
     success_url = reverse_lazy("pages:article_list")
 
-    def form_valid(self, form):
+    def form_valid(
+        self,
+        form: ArticleCreateForm
+    ) -> HttpResponse:
         article_input: ArticleInput = {
             "title": form.cleaned_data["title"],
             "body": form.cleaned_data["body"],
         }
 
-        article = create_article(
-            user=self.request.user,
+        user = cast(User, self.request.user)
+
+        self.object = create_article(
+            user=user,
             data=article_input,
         )
 
-        self.object = article
-
-        return HttpResponseRedirect(
-            self.get_success_url()
-        )
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class ArticleUpdateView(
     LoginRequiredMixin,
-    UpdateView,
+    UpdateView[Article, ArticleCreateForm],
 ):
     """
     Article更新CBV
@@ -242,10 +249,15 @@ class ArticleUpdateView(
 
     context_object_name = "article"
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Article]:
         return Article.objects.all()
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(
+        self,
+        request: HttpRequest,
+        *args: object,
+        **kwargs: object
+    ) -> HttpResponseBase:
         article = self.get_object()
 
         if (
@@ -260,35 +272,32 @@ class ArticleUpdateView(
             **kwargs,
         )
 
-    def form_valid(self, form):
+    def form_valid(
+        self,
+        form: ArticleCreateForm
+    ) -> HttpResponse:
         article_input: ArticleInput = {
             "title": form.cleaned_data["title"],
             "body": form.cleaned_data["body"],
         }
 
-        article = self.get_object()
-
-        article = update_article(
-            article=article,
+        self.object = update_article(
+            article=self.get_object(),
             data=article_input,
         )
 
-        self.object = article
-
-        return HttpResponseRedirect(
-            self.get_success_url()
-        )
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self) -> str:
-        return reverse_lazy(
+        return str(reverse_lazy(
             "pages:article_detail",
             kwargs={"pk": self.object.pk},
-        )
+        ))
 
 
 class ArticleDeleteView(
     LoginRequiredMixin,
-    DeleteView,
+    DeleteView[Article, Any],
 ):
     """
     Article削除CBV
@@ -296,17 +305,13 @@ class ArticleDeleteView(
 
     model = Article
 
-    template_name = (
-        "pages/article_confirm_delete.html"
-    )
+    template_name = "pages/article_confirm_delete.html"
 
-    success_url = reverse_lazy(
-        "pages:article_list"
-    )
+    success_url = str(reverse_lazy("pages:article_list"))
 
     context_object_name = "article"
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Article]:
         if self.request.user.is_superuser:
             return Article.objects.all()
 
@@ -314,19 +319,20 @@ class ArticleDeleteView(
             user=self.request.user,
         )
 
-    def delete(self, request, *args, **kwargs):
-        article = self.get_object()
-
+    def delete(
+            self,
+            request: HttpRequest,
+            *args: object,
+            **kwargs: Any,
+    ) -> HttpResponse:
         delete_article(
-            article=article,
+            article=self.get_object(),
         )
 
-        return HttpResponseRedirect(
-            self.get_success_url()
-        )
+        return HttpResponseRedirect(self.get_success_url())
 
 
-class ContactFormView(FormView):
+class ContactFormView(FormView[ContactForm]):
     """
     Contact FormView
     """
@@ -335,31 +341,26 @@ class ContactFormView(FormView):
 
     template_name = "pages/contact.html"
 
-    success_url = reverse_lazy(
-        "pages:article_list"
-    )
+    success_url = str(reverse_lazy("pages:article_list"))
 
-    def form_valid(self, form):
+    def form_valid(
+        self,
+        form: ContactForm
+    ) -> HttpResponse:
         print("=== CONTACT FORM ===")
 
-        print(
-            form.cleaned_data["name"]
-        )
+        print(form.cleaned_data["name"])
 
-        print(
-            form.cleaned_data["email"]
-        )
+        print(form.cleaned_data["email"])
 
-        print(
-            form.cleaned_data["message"]
-        )
+        print(form.cleaned_data["message"])
 
         return super().form_valid(form)
 
 
 class ArticleDetailView(
     LoginRequiredMixin,
-    DetailView,
+    DetailView[Article],
 ):
     """
     Article詳細CBV
@@ -367,9 +368,7 @@ class ArticleDetailView(
 
     model = Article
 
-    template_name = (
-        "pages/article_detail.html"
-    )
+    template_name = "pages/article_detail.html"
 
     context_object_name = "article"
 

@@ -63,12 +63,10 @@ def create_article(
     user: User,
     data: ArticleInput,
 ) -> Article:
-    article_schema = (
-        ArticleSchema.model_validate(data)
-    )
+    validated_data = ArticleSchema.model_validate(data)
     article = Article.objects.create(
-        title=article_schema.title,
-        body=article_schema.body,
+        title=validated_data.title,
+        body=validated_data.body,
         user=user,
     )
 
@@ -80,13 +78,11 @@ def update_article(
     article: Article,
     data: ArticleInput,
 ) -> Article:
-    article_schema = (
-        ArticleSchema.model_validate(data)
-    )
+    validated_date = ArticleSchema.model_validate(data)
 
-    article.title = article_schema.title
+    article.title = validated_date.title
 
-    article.body = article_schema.body
+    article.body = validated_date.body
 
     article.save()
 

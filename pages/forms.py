@@ -6,7 +6,6 @@ from django import forms
 
 from pages.models import Article
 
-
 if TYPE_CHECKING:
     BaseArticleForm = forms.ModelForm[Article]
 
