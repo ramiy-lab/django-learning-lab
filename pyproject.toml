@@ -16,7 +16,7 @@ DJANGO_SETTINGS_MODULE = "django_forge_01_basics.settings"
 
 addopts = "-v -s --tb=short --durations=3 --cov=utils --cov-report=term-missing"
 
-testpaths = ["tests"]
+testpaths = ["pages/tests"]
 
 python_files = ["test_*.py"]
 
