@@ -25,15 +25,10 @@ UPDATED_BODY: Final[str] = "updated body"
 
 
 @pytest.mark.django_db
-def test_create_article() -> None:
+def test_create_article(user) -> None:
     """
     create_article が正常に Article を作成することを確認する
     """
-
-    user = UserModel.objects.create_user(
-        username=TEST_USERNAME,
-        password=TEST_PASSWORD,
-    )
 
     article_input: ArticleInput = {
         "title": CREATE_TITLE,
@@ -53,21 +48,12 @@ def test_create_article() -> None:
 
 
 @pytest.mark.django_db
-def test_update_article() -> None:
+def test_update_article(
+    article: Article
+) -> None:
     """
     update_article が Article を正常更新することを確認する。
     """
-
-    user = UserModel.objects.create_user(
-        username=TEST_USERNAME,
-        password=TEST_PASSWORD,
-    )
-
-    article = Article.objects.create(
-        title=CREATE_TITLE,
-        body=CREATE_BODY,
-        user=user,
-    )
 
     update_input: ArticleInput = {
         "title": UPDATED_TITLE,
@@ -89,21 +75,12 @@ def test_update_article() -> None:
 
 
 @pytest.mark.django_db
-def test_delete_article() -> None:
+def test_delete_article(
+    article: Article
+) -> None:
     """
     delete_article が Article を正常削除することを確認する。
     """
-
-    user = UserModel.objects.create_user(
-        username=TEST_USERNAME,
-        password=TEST_PASSWORD,
-    )
-
-    article = Article.objects.create(
-        title=CREATE_TITLE,
-        body=CREATE_BODY,
-        user=user,
-    )
 
     assert Article.objects.count() == 1
 
