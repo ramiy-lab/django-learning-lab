@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import cast, Any
+from typing import cast, Any, TYPE_CHECKING
 
 from django.http import (
     HttpRequest,
@@ -43,6 +43,22 @@ from pages.services import (
     delete_article,
 )
 from pages.types import ArticleInput
+
+
+if TYPE_CHECKING:
+    BaseArticleListView = ListView[Article]
+    BaseArticleDetailView = DetailView[Article]
+    BaseArticleCreateView = CreateView[Article]
+    BaseArticleUpdateView = UpdateView[Article]
+    BaseArticleDeleteView = DeleteView[Article, ArticleCreateForm]
+    BaseContactFormView = FormView[ContactForm]
+else:
+    BaseArticleListView = ListView
+    BaseArticleDetailView = DetailView
+    BaseArticleCreateView = CreateView
+    BaseArticleUpdateView = UpdateView
+    BaseArticleDeleteView = DeleteView
+    BaseContactFormView = FormView
 
 
 def page_detail(request: HttpRequest, id: int) -> HttpResponse:
@@ -178,7 +194,7 @@ class AboutPageView(TemplateView):
     template_name = "pages/about.html"
 
 
-class ArticleListView(ListView[Article]):
+class ArticleListView(BaseArticleListView):
     """
     Article一覧表示CBV
     """
@@ -202,7 +218,7 @@ class ArticleListView(ListView[Article]):
 
 class ArticleCreateView(
     LoginRequiredMixin,
-    CreateView[Article, ArticleCreateForm],
+    BaseArticleCreateView,
 ):
     """
     Article作成CBV
@@ -225,17 +241,19 @@ class ArticleCreateView(
 
         user = cast(User, self.request.user)
 
-        self.object = create_article(
+        article = create_article(
             user=user,
             data=article_input,
         )
+
+        self.object = article
 
         return HttpResponseRedirect(self.get_success_url())
 
 
 class ArticleUpdateView(
     LoginRequiredMixin,
-    UpdateView[Article, ArticleCreateForm],
+    BaseArticleUpdateView,
 ):
     """
     Article更新CBV
@@ -281,23 +299,25 @@ class ArticleUpdateView(
             "body": form.cleaned_data["body"],
         }
 
-        self.object = update_article(
+        article = update_article(
             article=self.get_object(),
             data=article_input,
         )
 
+        self.object = article
+
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self) -> str:
-        return str(reverse_lazy(
+        return reverse_lazy(
             "pages:article_detail",
             kwargs={"pk": self.object.pk},
-        ))
+        )
 
 
 class ArticleDeleteView(
     LoginRequiredMixin,
-    DeleteView[Article, Any],
+    BaseArticleDeleteView,
 ):
     """
     Article削除CBV
@@ -307,7 +327,7 @@ class ArticleDeleteView(
 
     template_name = "pages/article_confirm_delete.html"
 
-    success_url = str(reverse_lazy("pages:article_list"))
+    success_url = reverse_lazy("pages:article_list")
 
     context_object_name = "article"
 
@@ -332,7 +352,7 @@ class ArticleDeleteView(
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ContactFormView(FormView[ContactForm]):
+class ContactFormView(BaseContactFormView):
     """
     Contact FormView
     """
@@ -341,7 +361,7 @@ class ContactFormView(FormView[ContactForm]):
 
     template_name = "pages/contact.html"
 
-    success_url = str(reverse_lazy("pages:article_list"))
+    success_url = reverse_lazy("pages:article_list")
 
     def form_valid(
         self,
@@ -360,7 +380,7 @@ class ContactFormView(FormView[ContactForm]):
 
 class ArticleDetailView(
     LoginRequiredMixin,
-    DetailView[Article],
+    BaseArticleDetailView,
 ):
     """
     Article詳細CBV
